@@ -12,7 +12,7 @@ export default function LoginPage() {
     const [message, setMessage] = useState('');
 
     // 🛠️ 1. 處理「純電子信箱/密碼登入」邏輯
-    const handleSignIn = async (e: React.SubmitEvent) => {
+    const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setLoading(true);
         setMessage('');
@@ -31,8 +31,7 @@ export default function LoginPage() {
     };
 
     // 🛠️ 2. 處理「純電子信箱/密碼註冊」邏輯
-    const handleSignUp = async (e: React.SubmitEvent) => {
-        e.preventDefault();
+    const handleSignUp = async () => {
         setLoading(true);
         setMessage('');
 
@@ -48,46 +47,55 @@ export default function LoginPage() {
     };
 
     return (
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', background: '#f3f4f6' }}>
-            <div style={{ background: '#fff', padding: '2rem', borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)', width: '100%', maxWidth: '400px' }}>
-                <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1.5rem', textAlign: 'center', color: '#1f2937' }}>
+        <div className="flex min-h-screen items-center justify-center bg-[#FDFBF7] px-4">
+            <div className="w-full max-w-md rounded-2xl border border-slate-100 bg-white p-8 shadow-sm">
+                <h1 className="mb-6 text-center text-2xl font-bold text-slate-900">
                     🌍 智旅規劃幫
                 </h1>
 
-                <form onSubmit={handleSignIn} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <form onSubmit={handleSignIn} className="flex flex-col gap-4">
                     <div>
-                        <label style={{ display: 'block', marginBottom: '0.25rem', fontSize: '0.875rem', color: '#4b5563' }}>電子信箱 (Email)</label>
+                        <label className="mb-1 block text-sm text-slate-600">
+                            電子信箱 (Email)
+                        </label>
                         <input
                             type="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             required
-                            style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1px solid #d1d5db' }}
+                            className="w-full rounded-lg border border-slate-200 px-3 py-2 text-slate-900 outline-none transition focus:border-[#FF8C42] focus:ring-2 focus:ring-[#FF8C42]/30"
                         />
                     </div>
 
                     <div>
-                        <label style={{ display: 'block', marginBottom: '0.25rem', fontSize: '0.875rem', color: '#4b5563' }}>密碼 (Password)</label>
+                        <label className="mb-1 block text-sm text-slate-600">
+                            密碼 (Password)
+                        </label>
                         <input
                             type="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             required
-                            style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1px solid #d1d5db' }}
+                            className="w-full rounded-lg border border-slate-200 px-3 py-2 text-slate-900 outline-none transition focus:border-[#FF8C42] focus:ring-2 focus:ring-[#FF8C42]/30"
                         />
                     </div>
 
                     {message && (
-                        <p style={{ fontSize: '0.875rem', textAlign: 'center', color: message.startsWith('❌') ? '#ef4444' : '#10b981' }}>
+                        <p
+                            className={`text-center text-sm ${
+                                message.startsWith('❌') ? 'text-red-500' : 'text-emerald-600'
+                            }`}
+                        >
                             {message}
                         </p>
                     )}
 
-                    <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
+                    <div className="mt-2 flex gap-3">
+                        {/* 主視覺：湛藍海洋色；Hover / Focus 以夕陽橘做細節點綴 */}
                         <button
                             type="submit"
                             disabled={loading}
-                            style={{ flex: 1, padding: '0.75rem', background: '#2563eb', color: '#fff', borderRadius: '4px', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}
+                            className="flex-1 rounded-lg bg-sky-600 px-4 py-3 font-bold text-white transition hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-[#FF8C42]/50 disabled:cursor-not-allowed disabled:opacity-60"
                         >
                             {loading ? '處理中...' : '登入'}
                         </button>
@@ -95,7 +103,7 @@ export default function LoginPage() {
                             type="button"
                             onClick={handleSignUp}
                             disabled={loading}
-                            style={{ flex: 1, padding: '0.75rem', background: '#10b981', color: '#fff', borderRadius: '4px', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}
+                            className="flex-1 rounded-lg border border-sky-600 px-4 py-3 font-bold text-sky-600 transition hover:border-[#FF8C42] hover:text-[#FF8C42] focus:outline-none focus:ring-2 focus:ring-[#FF8C42]/50 disabled:cursor-not-allowed disabled:opacity-60"
                         >
                             註冊
                         </button>
