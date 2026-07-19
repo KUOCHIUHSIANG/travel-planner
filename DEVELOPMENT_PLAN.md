@@ -48,6 +48,9 @@
     - [ ] 4-8-1. 於 `destinations` 表新增 `lat`／`lng` 欄位並重生型別；確立座標來源（Geocoding／AI／手動）。
     - [ ] 4-8-2. 帶使用者開啟**綁卡計費的 Google Cloud 帳號**、啟用 Maps JavaScript／Distance Matrix API，取得 Maps API Key（前端金鑰以 referrer 限制）。
     - [ ] 4-8-3. 於頁內嵌入地圖標記各景點；相鄰景點距離／行車時間之計算走後端 Route Handler。
+- [ ] 4-9. **景點私密/驚喜旗標（`is_secret`）**（詳規格見 PRD 第 2 節、架構見 ADR-0009）：
+    - [ ] 4-9-1. 於 `destinations` 表新增 `is_secret boolean not null default false` 欄位，並更新 SELECT RLS 政策（擁有者看全部、訪客僅看公開行程之非私密景點）；重生型別。
+    - [ ] 4-9-2. 於景點編輯器加入「🔒 只有我看得到（驚喜）」切換，寫入 `is_secret`。
 
 ## 🚀 階段五：生產環境部署與功能延伸 (Deployment & OAuth)
 - [ ] 5-1. 於 Supabase 啟用並實作 Google 第三方快速登入按鈕。

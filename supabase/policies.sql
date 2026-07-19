@@ -46,13 +46,20 @@ USING (auth.uid() = user_id);
 -- ==========================================
 -- 說明：景點是依附在行程底下的。我們透過「檢查該景點所屬的 trip 是否屬於目前使用者，或者該 trip 是否為公開」來決定權限。
 
+-- 景點層級私密/驚喜旗標（ADR-0009）：預設 false（公開可見）
+ALTER TABLE destinations ADD COLUMN IF NOT EXISTS is_secret boolean NOT NULL DEFAULT false;
+
+-- 讀取政策：擁有者看得到自己所有景點（含私密）；訪客僅看得到「公開行程中 is_secret = false」的景點
 CREATE POLICY "允許讀取公開景點或自己的景點"
 ON destinations FOR SELECT
 USING (
     EXISTS (
         SELECT 1 FROM trips
         WHERE trips.id = destinations.trip_id
-        AND (trips.is_public = true OR trips.user_id = auth.uid())
+        AND (
+            trips.user_id = auth.uid()                                  -- 擁有者：全部可見
+            OR (trips.is_public = true AND destinations.is_secret = false)  -- 訪客：僅公開行程之非私密景點
+        )
     )
 );
 

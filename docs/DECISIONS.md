@@ -26,6 +26,7 @@
 | [0006](#adr-0006訪客存取-trips-導回首頁首頁登入入口依-session-變臉) | 訪客 `/trips` 導回首頁、登入入口依 session 變臉 | 階段 4 | `src/proxy.ts`、`/`、`/trips` | Accepted |
 | [0007](#adr-0007ai-行程生成採-gemini--route-handler--unsplash) | AI 行程生成採 Gemini + Route Handler + Unsplash | 階段 4-3b | `/api/trips/generate`、`AiCreateTripModal`、`trips`/`destinations` | Accepted |
 | [0008](#adr-0008行程詳細頁地圖與距離採-google-maps-platform) | 行程詳細頁地圖與距離採 Google Maps Platform | 階段 4-8 | `/trips/[id]`、`destinations`(lat/lng) | Accepted |
+| [0009](#adr-0009景點層級私密驚喜旗標-is_secret-以-rls-強制) | 景點層級私密/驚喜旗標 `is_secret`（以 RLS 強制） | 階段 4-9 | `destinations`(is_secret)、RLS | Accepted |
 
 > 環境設定（非決策）的踩雷備忘見文末[附錄](#-附錄環境設定備忘非決策但換環境會重踩)。
 
@@ -164,6 +165,24 @@
   - ⚠️ **本專案首個需綁定信用卡、開啟計費的服務**（Google Cloud）；雖有每月免費額度，仍須留意超額計費與用量監控。
   - ⚠️ 需管理景點座標來源；前端金鑰僅能靠 referrer／白名單防濫用，無法完全隱藏。
   - 💡 若日後想避免綁卡，替代方案為 OpenStreetMap + Leaflet + Haversine 直線距離（另開 ADR 評估）。
+
+---
+
+## ADR-0009：景點層級私密/驚喜旗標 `is_secret`（以 RLS 強制）
+
+- **關聯階段**：階段 4-9（景點私密旗標）
+- **影響範圍**：資料表 `destinations`（新增 `is_secret`）、`destinations` 的 SELECT RLS 政策、景點編輯器
+- **狀態**：Accepted
+- **情境**：既有私密控制僅在**整個行程**層級（`trips.is_public`）。使用者需要「行程分享出去、但**特定景點**（如給對方的驚喜蛋糕店）只有擁有者本人看得到」的能力。功能規格見 `PRODUCT_REQUIREMENTS.md` 第 2 節。
+- **決策**：
+  - `destinations` 新增 **`is_secret boolean not null default false`**。
+  - 改寫 `destinations` 的 **SELECT RLS 政策**：擁有者（`trips.user_id = auth.uid()`）看得到自己所有景點；其他人（訪客/未登入/非擁有者）僅看得到「`trips.is_public = true` 且 `destinations.is_secret = false`」的景點。
+  - **強制點在 RLS**（資料庫層過濾），非僅前端隱藏 —— 私密景點對非擁有者「不存在於查詢結果」，DevTools／直接呼叫 API 皆無法取得。
+- **影響**：
+  - ✅ 可安全地在公開/分享行程中夾帶只有自己看得到的驚喜景點。
+  - ✅ 多使用者情境下亦正確：他人登入看你的公開行程，仍看不到私密景點。
+  - ⚠️ 前提是別把帳號擁有權交給他人（屬帳號安全，非 RLS 範疇）。
+  - 📌 RLS 政策原始碼同步更新於 `supabase/policies.sql`。
 
 ---
 
