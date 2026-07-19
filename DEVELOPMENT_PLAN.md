@@ -40,10 +40,14 @@
     - [ ] 4-3b-7. 編寫後端 Route Handler `src/app/api/trips/generate/route.ts`：Gemini 結構化 JSON 生成 → 重用封面取圖邏輯 → Supabase 伺服器端寫入 `trips`(含 `cover_url`)＋`destinations` → 回傳新行程 id。
     - [ ] 4-3b-8. 編寫前端「🤖 AI 生成」Modal `src/components/AiCreateTripModal.tsx`（自然語言輸入、Loading 防呆、PRD 視覺），成功後導向 `/trips/[id]`。
     - [ ] 4-3b-9. （與 4-4／4-5 交界）確保無論人工或 AI 建立的景點，皆可於 `/trips/[id]` 編輯器人工新增／中間插入／修改／刪除／排序。
-- [ ] 4-4. 建立高度互動的 `/trips/[id]` 動態頁面，實作 SSR 密碼驗證頁與行程展示/編輯主體。
-- [ ] 4-5. **實作景點順序調整與時間計算**：實作景點排序（Sequence/Order）與跨國旅遊時區轉換。
+- [ ] 4-4. 建立高度互動的 `/trips/[id]` 動態頁面，實作 SSR 密碼驗證頁與行程展示/編輯主體；行程展示採**混合檢視（全部總覽／單日聚焦可切換）**（詳規格見 PRD 第 6 節）。
+- [ ] 4-5. **實作景點順序調整與時間計算**：實作景點排序（`sort_order`）、**跨天移動景點（更新 `day_number`）**與跨國旅遊時區轉換。
 - [ ] 4-6. 實作 API 呼叫程式碼與後端爬蟲邏輯，處理 OGP 網址預覽，以及表情符號 JSONB 欄位之非同步同步。
 - [ ] 4-7. 實作「一鍵公開/私密」切換，更新資料庫 `is_public` 欄位與安全校驗。
+- [ ] 4-8. **`/trips/[id]` 串接 Google Maps 顯示景點位置與景點間距離**（詳規格見 PRD 第 6 節、架構見 ADR-0008）：
+    - [ ] 4-8-1. 於 `destinations` 表新增 `lat`／`lng` 欄位並重生型別；確立座標來源（Geocoding／AI／手動）。
+    - [ ] 4-8-2. 帶使用者開啟**綁卡計費的 Google Cloud 帳號**、啟用 Maps JavaScript／Distance Matrix API，取得 Maps API Key（前端金鑰以 referrer 限制）。
+    - [ ] 4-8-3. 於頁內嵌入地圖標記各景點；相鄰景點距離／行車時間之計算走後端 Route Handler。
 
 ## 🚀 階段五：生產環境部署與功能延伸 (Deployment & OAuth)
 - [ ] 5-1. 於 Supabase 啟用並實作 Google 第三方快速登入按鈕。

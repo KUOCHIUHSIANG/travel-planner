@@ -25,6 +25,7 @@
 | [0005](#adr-0005將-middleware-遷移為-proxyts) | 將 middleware 遷移為 `proxy.ts` | 階段 3-1 | `src/proxy.ts`（守 `/trips`、`/login`） | Accepted |
 | [0006](#adr-0006訪客存取-trips-導回首頁首頁登入入口依-session-變臉) | 訪客 `/trips` 導回首頁、登入入口依 session 變臉 | 階段 4 | `src/proxy.ts`、`/`、`/trips` | Accepted |
 | [0007](#adr-0007ai-行程生成採-gemini--route-handler--unsplash) | AI 行程生成採 Gemini + Route Handler + Unsplash | 階段 4-3b | `/api/trips/generate`、`AiCreateTripModal`、`trips`/`destinations` | Accepted |
+| [0008](#adr-0008行程詳細頁地圖與距離採-google-maps-platform) | 行程詳細頁地圖與距離採 Google Maps Platform | 階段 4-8 | `/trips/[id]`、`destinations`(lat/lng) | Accepted |
 
 > 環境設定（非決策）的踩雷備忘見文末[附錄](#-附錄環境設定備忘非決策但換環境會重踩)。
 
@@ -144,6 +145,25 @@
   - ✅ 免費額度，個人專案成本為零。
   - ⚠️ 引入本專案**首個外部 AI 依賴（Gemini）**；未來若要改用其他模型（如 Claude），只需替換 Route Handler 內的生成段落，前端與資料流不受影響。
   - ⚠️ 需申請並保管兩把外部 API Key（Gemini、Unsplash），屬換環境要重做的設定。
+
+---
+
+## ADR-0008：行程詳細頁地圖與距離採 Google Maps Platform
+
+- **關聯階段**：階段 4-8（`/trips/[id]` 地圖與景點距離）
+- **影響範圍**：頁面 `/trips/[id]`、資料表 `destinations`（新增 `lat`／`lng`）、地圖與距離之後端 Route Handler
+- **狀態**：Accepted
+- **情境**：`/trips/[id]` 需顯示各景點位置與**景點間距離**，協助評估當天動線。使用者在「Google Maps（最準，需綁卡計費）」與「免費 OpenStreetMap + 直線距離」之間，選擇 **Google Maps** 以取得準確的距離／行車時間。功能規格見 `PRODUCT_REQUIREMENTS.md` 第 6 節。
+- **決策**：
+  - 採 **Google Maps Platform**：地圖顯示用 **Maps JavaScript API**，距離計算用 **Distance Matrix／Directions API**。
+  - `destinations` 新增 **`lat`／`lng`** 欄位；座標來源後續決定（Geocoding／AI／手動）。
+  - **金鑰處理**：前端 Maps JS 金鑰無法完全隱藏，須以 **HTTP referrer 限制網域**；距離計算改走**後端 Route Handler** 保護金鑰並集中計費控管。
+  - 多天展示採「全部總覽／單日聚焦」混合切換；景點跨天移動改 `day_number`、同日排序改 `sort_order`（既有欄位，無需改表）。
+- **影響**：
+  - ✅ 取得最準確的距離／路線資訊。
+  - ⚠️ **本專案首個需綁定信用卡、開啟計費的服務**（Google Cloud）；雖有每月免費額度，仍須留意超額計費與用量監控。
+  - ⚠️ 需管理景點座標來源；前端金鑰僅能靠 referrer／白名單防濫用，無法完全隱藏。
+  - 💡 若日後想避免綁卡，替代方案為 OpenStreetMap + Leaflet + Haversine 直線距離（另開 ADR 評估）。
 
 ---
 

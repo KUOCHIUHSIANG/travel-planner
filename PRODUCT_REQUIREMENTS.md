@@ -82,3 +82,18 @@
 - **封面取圖統一走後端**：人工新增（B）與 AI 生成（C）取 Unsplash 圖片時，皆透過伺服器端 Route Handler 呼叫，前端不得直接持有 Unsplash Key。
 - **Unsplash 額度**：免費 Demo 約 50 次/小時（以官方後台為準）；人工「重新生成」與 AI 生成都各算一次呼叫，UI 需防呆並在達限時友善提示。
 - 寫入 `trips` / `destinations` 時，`user_id` 綁定當前登入者，受既有 RLS 保護。
+
+## 🗺️ 6. 行程詳細頁 `/trips/[id]`：多天展示與地圖距離
+### A. 多天行程展示（混合：全部／單日可切換）
+- 提供兩種檢視，使用者可自由切換（如頂部 Tab 或 Toggle）：
+    - **全部總覽**：各天由上到下堆疊，每天一個區塊，一次看完整趟行程。
+    - **單日聚焦**：以下拉選單／Tab 選第幾天，只顯示該天的景點。
+- **跨天調整**：每個景點可「**移動到第 X 天**」（更新 `day_number`）；同一天內可調整先後順序（更新 `sort_order`）。資料表既有 `day_number`／`sort_order` 欄位已支援，無需改表。
+
+### B. Google Maps 地圖與景點間距離
+- 於 `/trips/[id]` 頁內嵌入地圖，標記各景點位置，並顯示**相鄰景點之間的距離**（以及／或行車時間），協助評估當天動線是否順路。
+- **座標需求**：`destinations` 需新增**經緯度欄位（`lat`／`lng`）**；座標來源後續決定（Google Geocoding、AI 產生或手動填）。
+- **服務選型**：採 **Google Maps Platform**（使用者已同意此為需**綁定信用卡、開啟計費的 Google Cloud 帳號**之服務；有每月免費額度，須留意超額計費）。
+- **金鑰處理**：
+    - 地圖顯示用 **Maps JavaScript API**，前端金鑰須以 **HTTP referrer 限制網域**（前端金鑰無法完全隱藏，靠白名單防濫用）。
+    - 距離計算（**Distance Matrix／Directions API**）可改走**後端 Route Handler**以保護該金鑰並集中計費控管。
