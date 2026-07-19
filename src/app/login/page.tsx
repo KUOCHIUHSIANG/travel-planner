@@ -12,7 +12,7 @@ export default function LoginPage() {
     const [message, setMessage] = useState('');
 
     // 🛠️ 1. 處理「純電子信箱/密碼登入」邏輯
-    const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSignIn = async (e: React.SyntheticEvent<HTMLFormElement>) => {
         e.preventDefault();
         setLoading(true);
         setMessage('');
