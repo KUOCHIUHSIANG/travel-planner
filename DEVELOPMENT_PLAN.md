@@ -15,7 +15,7 @@
 - [x] 2-3. 在本機執行 Supabase CLI 指令，自動生成對應資料庫的 TypeScript 型別定義檔案。
 
 ## 🔐 階段三：身分驗證系統 (Auth) ✅
-- [x] 3-1. 在專案**根目錄**編寫 `middleware.ts` 伺服器端路由守衛程式碼（`createServerClient` + `getAll/setAll`）。
+- [x] 3-1. 在 `src/middleware.ts` 編寫伺服器端路由守衛程式碼（`createServerClient` + `getAll/setAll`）。
 - [x] 3-2. 確保 Supabase 控制台 Email Auth 基礎功能啟用（並暫時停用 Google OAuth 以簡化流程）。
 - [x] 3-3. 編寫前端 `/login` 頁面，實作「純帳號密碼註冊/登入」的 React Client UI 組件與核心邏輯，並處理好 `useEffect` 客戶端雙重安全攔截（消除 ESLint Promise 警告）。
 
@@ -45,26 +45,4 @@
 
 ---
 
-## 📝 開發紀錄與技術決策備忘（跨 AI 交接用）
-
-> 本區記錄「看程式碼不一定看得出來」的關鍵決策、踩雷與環境設定，避免不同 AI 之間產生落差。
-
-### 🔑 身分驗證與 Cookie（已解決的重大坑）
-- **瀏覽器端必須用 `@supabase/ssr` 的 `createBrowserClient`**，不可用 `@supabase/supabase-js` 的 `createClient`。
-  - 原因：`createClient` 預設把 session 存 `localStorage`，伺服器端（middleware / Server Component）**讀不到** → 會發生「登入成功卻被踢回 `/login`」。
-  - 改用 `createBrowserClient` 後 session 寫入 **Cookie**，三端（瀏覽器 / middleware / Server Component）身分同步。
-- **Server 端一律透過 `src/lib/supabaseServer.ts` 的 `createSupabaseServerClient()`**（`await cookies()` + `getAll/setAll`），讓 RLS 生效。
-- `middleware.ts` 位於**專案根目錄**（非 `src/`）；曾修正 `request.cookies.set` 誤加 `...options` 造成的型別錯誤。
-
-### 🗄️ Supabase 後台設定（不在程式碼內，換環境要重做）
-- **Data API 需「兩層」開啟**：Settings → API → Data API 內，除了 Exposed schemas 選 `public`，還要在 **Exposed tables** 逐一開啟 `trips`、`destinations`（曾因表層開關關閉顯示 `API DISABLED`，導致 `.from()` 撈不到資料）。
-- **RLS 政策原始碼備份於 `supabase/policies.sql`**（已版控）；`trips` 用 `auth.uid() = user_id`、`destinations` 用 EXISTS 反查母行程擁有權/公開狀態。
-
-### 🧭 動線與頁面現況
-- 首頁 `/`：公開大廳，Server Component 撈 `is_public = true`（真資料，非 Mock）；卡片連往 `/trips/[id]?mode=public`。
-- `/trips`：登入者個人大廳（讀取已完成）；頁首右上為登出按鈕，**登出後導回首頁 `/`**。
-- 登入頁 `/login` **不主動出現**，僅在點「我的行程」進 `/trips` 未登入時由 middleware 導向。
-- 專案採「**編輯模式切換**」而非獨立後台（同一 `/trips/[id]` 動態頁依身分切換編輯/唯讀）。
-
-### 🎨 視覺規範（PRD）
-- 底色沙灘微米白 `#FDFBF7`；主色湛藍海洋色 `sky-600`；夕陽橘 `#FF8C42` 僅作 5% Hover/Focus 點綴，禁用於大面積背景。
+> 📌 **技術決策與踩雷紀錄（ADR）** 已移至 [`docs/DECISIONS.md`](./docs/DECISIONS.md)；本進度表僅保留大方向勾選清單，不含實作細節。
