@@ -19,6 +19,7 @@ export type Database = {
           created_at: string
           day_number: number
           id: string
+          is_secret: boolean
           name_en: string | null
           name_ko: string | null
           name_zh: string
@@ -31,6 +32,7 @@ export type Database = {
           created_at?: string
           day_number: number
           id?: string
+          is_secret?: boolean
           name_en?: string | null
           name_ko?: string | null
           name_zh: string
@@ -43,6 +45,7 @@ export type Database = {
           created_at?: string
           day_number?: number
           id?: string
+          is_secret?: boolean
           name_en?: string | null
           name_ko?: string | null
           name_zh?: string
