@@ -1,6 +1,7 @@
-import { createClient } from '@supabase/supabase-js';
+import { createBrowserClient } from '@supabase/ssr';
+import type { Database } from '@/types/supabase';
 
-// 1. 從環境變數中讀取我們剛剛在 .env.local 設定好的連線憑證
+// 1. 從環境變數中讀取我們在 .env.local 設定好的連線憑證
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
@@ -9,6 +10,8 @@ if (!supabaseUrl || !supabaseAnonKey) {
     throw new Error('❌ 錯誤：找不到 Supabase 環境變數，請檢查 .env.local 檔案設定！');
 }
 
-// 3. 正式初始化 Supabase 客戶端實例並導出（Export）
-// 未來專案中不論是 SSR 還是在 SPA 元件中要讀寫資料，全部都呼叫這個實例
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// 3. 使用 @supabase/ssr 的 createBrowserClient 初始化「瀏覽器端」實例。
+//    關鍵：它會將登入 session 寫進 Cookie（而非 localStorage），
+//    如此 middleware.ts 與 Server Component 才能在伺服器端讀到相同的登入身分，
+//    登入狀態得以跨 Server / Client 同步，避免登入後仍被踢回 /login。
+export const supabase = createBrowserClient<Database>(supabaseUrl, supabaseAnonKey);
