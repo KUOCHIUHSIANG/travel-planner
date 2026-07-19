@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { createSupabaseServerClient } from '@/lib/supabaseServer';
 import type { Tables } from '@/types/supabase';
+import LogoutButton from './_components/LogoutButton';
 
 // 對應資料庫 trips 資料表的一列
 type Trip = Tables<'trips'>;
@@ -32,11 +33,12 @@ export default async function TripsPage() {
         <main className="min-h-screen bg-[#FDFBF7]">
             <div className="mx-auto max-w-6xl px-6 py-12">
                 {/* 頁首 */}
-                <header className="mb-10 flex items-end justify-between">
+                <header className="mb-10 flex items-end justify-between gap-4">
                     <div className="space-y-2">
                         <h1 className="text-3xl font-bold text-slate-900">我的行程</h1>
                         <p className="text-slate-500">規劃、收藏並管理屬於你們的濟州島旅程。</p>
                     </div>
+                    <LogoutButton />
                 </header>
 
                 {/* 撈取失敗提示 */}
