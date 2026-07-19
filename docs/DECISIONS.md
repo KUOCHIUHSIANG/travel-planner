@@ -18,10 +18,11 @@
 
 | ADR | 標題 | 關聯階段 | 影響範圍 / 頁面 | 狀態 |
 | :--- | :--- | :--- | :--- | :--- |
-| [0001](#adr-0001身分驗證採-supabasessr-的-cookie-機制) | 身分驗證採 `@supabase/ssr` Cookie | 階段三（Auth） | 全站：`middleware`、所有 Server Component、`/login`、`/trips` | Accepted |
+| [0001](#adr-0001身分驗證採-supabasessr-的-cookie-機制) | 身分驗證採 `@supabase/ssr` Cookie | 階段三（Auth） | 全站：`proxy`、所有 Server Component、`/login`、`/trips` | Accepted |
 | [0002](#adr-0002middlewarets-置於-src-目錄) | `middleware.ts` 置於 `src/` 目錄 | 階段 3-1 | `src/middleware.ts`（守 `/trips`、`/login`） | Accepted |
 | [0003](#adr-0003採編輯模式切換單一動態頁不建獨立後台) | 編輯模式切換、不建獨立後台 | 階段 4-1 / 4-4 | 頁面：`/trips/[id]` | Accepted |
 | [0004](#adr-0004登出後導向公開首頁-登入頁不主動出現) | 登出導向首頁、登入頁不主動出現 | 階段 4-3 | 頁面：`/trips`（登出鈕）、`/` | Accepted |
+| [0005](#adr-0005將-middleware-遷移為-proxyts) | 將 middleware 遷移為 `proxy.ts` | 階段 3-1 | `src/proxy.ts`（守 `/trips`、`/login`） | Accepted |
 
 > 環境設定（非決策）的踩雷備忘見文末[附錄](#-附錄環境設定備忘非決策但換環境會重踩)。
 
@@ -30,7 +31,7 @@
 ## ADR-0001：身分驗證採 `@supabase/ssr` 的 Cookie 機制
 
 - **關聯階段**：階段三（身分驗證系統 Auth）
-- **影響範圍**：全站 —— `middleware.ts`、所有 Server Component、`/login`、`/trips`
+- **影響範圍**：全站 —— `src/proxy.ts`、所有 Server Component、`/login`、`/trips`
 - **狀態**：Accepted
 - **情境**：最初 `src/lib/supabaseClient.ts` 用 `@supabase/supabase-js` 的 `createClient`，它預設把登入 session 存在瀏覽器 `localStorage`。但本專案有 Next.js middleware 與 Server Component，需要在**伺服器端**判定身分，而伺服器讀不到 `localStorage` → 導致「登入成功卻仍被踢回 `/login`」。
 - **決策**：
@@ -55,7 +56,7 @@
   - ✅ 所有原始碼收斂於 `src/`，根目錄只留設定檔與文件。
   - ⚠️ 文件若提及路徑，應寫 `src/middleware.ts`（非根目錄）。
   - 📌 曾修正一個 bug（commit `f860fe7`）：`request.cookies.set(name, value, ...options)` 誤把物件 `options` 用展開語法當第三參數；`request.cookies.set` 只接受 `(name, value)`，options 應僅用於 `response.cookies.set`。此錯由 `npm run build`／`tsc` 靜態揪出（該 `setAll` callback 僅在 token 刷新時才觸發，故先前潛伏未爆）。
-  - 💡 待議：Next.js 16.2 起 `middleware` 命名慣例已棄用，官方建議改為 `proxy.ts`；目前仍可運作，未來另開 ADR 評估遷移。
+  - ✅ 後續已於 **ADR-0005** 將檔案遷移為 `src/proxy.ts`（本 ADR 的路徑描述為當時歷史狀態）。
 
 ---
 
@@ -83,6 +84,21 @@
 - **影響**：
   - ✅ 一般訪客動線以公開大廳為主，登入是「需要時才觸發」的隱性入口。
   - ✅ 登出後仍停在有內容的頁面，不會落在冷清的登入框。
+
+---
+
+## ADR-0005：將 middleware 遷移為 `proxy.ts`
+
+- **關聯階段**：階段 3-1（伺服器端路由守衛）
+- **影響範圍**：`src/proxy.ts`（守衛 `/trips`、`/login`）
+- **狀態**：Accepted（取代 ADR-0002 的檔名/函式名部分）
+- **情境**：Next.js 16.2 起，`middleware` 檔案慣例被**標記為棄用**（`next build` 會警告 `The "middleware" file convention is deprecated. Please use "proxy" instead.`）。官方將其更名為 `proxy`，以更精準表達「應用程式前方的網路代理層」語意，並鼓勵開發者盡量避免依賴此功能。專案方針為**避免任何棄用寫法**。
+- **決策**：依官方遷移指引，將 **`src/middleware.ts` → `src/proxy.ts`**、匯出函式 **`middleware` → `proxy`**；`config`（`matcher`）維持不變。內部 Supabase `createServerClient` + `getAll/setAll` 邏輯不變。
+- **影響**：
+  - ✅ 消除 `next build` 的棄用警告，採用當前官方慣例。
+  - ✅ 經 `next build` 驗證仍顯示 `ƒ Proxy (Middleware)`、`tsc` exit 0，門禁功能無損。
+  - ⚠️ 日後文件與程式碼一律以 `src/proxy.ts` / `proxy` 稱之，勿再用 `middleware`。
+  - 📌 官方另提供 codemod：`npx @next/codemod@canary middleware-to-proxy .`（本次因檔案單純，直接手動改名 + 改函式名）。
 
 ---
 

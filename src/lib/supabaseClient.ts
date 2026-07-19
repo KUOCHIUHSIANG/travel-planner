@@ -12,6 +12,6 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
 // 3. 使用 @supabase/ssr 的 createBrowserClient 初始化「瀏覽器端」實例。
 //    關鍵：它會將登入 session 寫進 Cookie（而非 localStorage），
-//    如此 middleware.ts 與 Server Component 才能在伺服器端讀到相同的登入身分，
+//    如此 src/proxy.ts 與 Server Component 才能在伺服器端讀到相同的登入身分，
 //    登入狀態得以跨 Server / Client 同步，避免登入後仍被踢回 /login。
 export const supabase = createBrowserClient<Database>(supabaseUrl, supabaseAnonKey);

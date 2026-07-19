@@ -25,7 +25,7 @@ export async function createSupabaseServerClient() {
                         );
                     } catch {
                         // 在 Server Component 中呼叫 setAll 會拋錯（唯讀），可安全忽略；
-                        // Session 的更新交由根目錄 middleware.ts 負責寫回 Cookie。
+                        // Session 的更新交由 src/proxy.ts 負責寫回 Cookie。
                     }
                 },
             },

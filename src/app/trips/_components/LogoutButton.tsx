@@ -14,7 +14,7 @@ export default function LogoutButton() {
         setLoading(true);
         await supabase.auth.signOut();
         router.push('/'); // 登出後回到公開行程大廳首頁
-        router.refresh(); // 刷新讓 middleware 依最新（已清空）的 Cookie 重新判定身分
+        router.refresh(); // 刷新讓 proxy 依最新（已清空）的 Cookie 重新判定身分
     };
 
     return (

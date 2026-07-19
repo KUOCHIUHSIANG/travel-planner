@@ -14,7 +14,7 @@ type Trip = Tables<'trips'>;
 export default async function TripsPage() {
     const supabase = await createSupabaseServerClient();
 
-    // 1. 確認登入身分（middleware 已擋一層，這裡再取一次以便撈資料與雙保險）
+    // 1. 確認登入身分（proxy 已擋一層，這裡再取一次以便撈資料與雙保險）
     const {
         data: { user },
     } = await supabase.auth.getUser();

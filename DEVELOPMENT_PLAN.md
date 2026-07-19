@@ -15,7 +15,7 @@
 - [x] 2-3. 在本機執行 Supabase CLI 指令，自動生成對應資料庫的 TypeScript 型別定義檔案。
 
 ## 🔐 階段三：身分驗證系統 (Auth) ✅
-- [x] 3-1. 在 `src/middleware.ts` 編寫伺服器端路由守衛程式碼（`createServerClient` + `getAll/setAll`）。
+- [x] 3-1. 在 `src/proxy.ts` 編寫伺服器端路由守衛程式碼（`createServerClient` + `getAll/setAll`；原 `middleware.ts`，見 ADR-0005）。
 - [x] 3-2. 確保 Supabase 控制台 Email Auth 基礎功能啟用（並暫時停用 Google OAuth 以簡化流程）。
 - [x] 3-3. 編寫前端 `/login` 頁面，實作「純帳號密碼註冊/登入」的 React Client UI 組件與核心邏輯，並處理好 `useEffect` 客戶端雙重安全攔截（消除 ESLint Promise 警告）。
 
