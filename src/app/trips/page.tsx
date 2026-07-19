@@ -20,7 +20,7 @@ export default async function TripsPage() {
     } = await supabase.auth.getUser();
 
     if (!user) {
-        redirect('/login');
+        redirect('/'); // 安全網：proxy 已擋一層，這裡與其一致導回首頁
     }
 
     // 2. 撈取行程；RLS（auth.uid() = user_id）會自動只回傳當前使用者的資料
@@ -33,12 +33,21 @@ export default async function TripsPage() {
         <main className="min-h-screen bg-[#FDFBF7]">
             <div className="mx-auto max-w-6xl px-6 py-12">
                 {/* 頁首 */}
-                <header className="mb-10 flex items-end justify-between gap-4">
+                <header className="mb-10 flex items-center justify-between gap-4">
                     <div className="space-y-2">
                         <h1 className="text-3xl font-bold text-slate-900">我的行程</h1>
                         <p className="text-slate-500">規劃、收藏並管理屬於你們的濟州島旅程。</p>
                     </div>
-                    <LogoutButton />
+                    <div className="flex shrink-0 items-center gap-3">
+                        {/* 前往公開行程大廳首頁，置於登出按鈕左側 */}
+                        <Link
+                            href="/"
+                            className="rounded-lg border border-sky-600 px-4 py-2 text-sm font-medium text-sky-600 transition hover:border-[#FF8C42] hover:text-[#FF8C42]"
+                        >
+                            公開大廳
+                        </Link>
+                        <LogoutButton />
+                    </div>
                 </header>
 
                 {/* 撈取失敗提示 */}

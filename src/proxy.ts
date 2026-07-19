@@ -35,10 +35,10 @@ export async function proxy(request: NextRequest) {
     // 2. 獲取目前點擊網頁的使用者登入狀態
     const { data: { user } } = await supabase.auth.getUser();
 
-    // 🔴 門禁邏輯：如果使用者想要去後台行程頁面（/trips），但卻沒有登入（user 為 null）
+    // 🔴 門禁邏輯：訪客（未登入）想進個人行程頁 /trips → 導回公開大廳首頁 /
+    //    （對訪客而言首頁也是行程列表；登入入口改由首頁的「登入」按鈕明確提供）
     if (request.nextUrl.pathname.startsWith('/trips') && !user) {
-        // 強制重導向回登入頁面
-        return NextResponse.redirect(new URL('/login', request.url));
+        return NextResponse.redirect(new URL('/', request.url));
     }
 
     // 🟢 門禁邏輯：如果使用者已經登入，卻還想去 `/login` 頁面

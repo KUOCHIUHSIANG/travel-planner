@@ -12,6 +12,11 @@ type Trip = Tables<'trips'>;
 export default async function HomePage() {
   const supabase = await createSupabaseServerClient();
 
+  // 讀取登入狀態，決定右上按鈕要顯示「登入」還是「我的行程」
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   // 只撈公開行程；private 行程會被 .eq('is_public', true) 過濾掉，
   // 私密行程即使是自己的也不會出現在公開大廳（驗證分流用）。
   const { data: trips, error } = await supabase
@@ -24,18 +29,19 @@ export default async function HomePage() {
     <main className="min-h-screen bg-[#FDFBF7]">
       <div className="mx-auto max-w-6xl px-6 py-12">
         {/* 頁首：公開行程大廳標題 + 登入入口 */}
-        <header className="mb-10 flex items-start justify-between gap-4">
+        <header className="mb-10 flex items-center justify-between gap-4">
           <div className="space-y-2">
             <h1 className="text-3xl font-bold text-slate-900">公開行程大廳</h1>
             <p className="text-slate-500">
               探索大家分享的濟州島與韓國旅遊路線，找靈感、抄作業。
             </p>
           </div>
+          {/* 依登入狀態變臉：未登入顯示「登入」，已登入顯示「我的行程」 */}
           <Link
-            href="/trips"
+            href={user ? '/trips' : '/login'}
             className="shrink-0 rounded-lg border border-sky-600 px-4 py-2 text-sm font-medium text-sky-600 transition hover:border-[#FF8C42] hover:text-[#FF8C42]"
           >
-            我的行程
+            {user ? '我的行程' : '登入'}
           </Link>
         </header>
 
