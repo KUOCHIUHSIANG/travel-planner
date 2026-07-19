@@ -198,8 +198,10 @@
 - **RLS 政策原始碼備份於 [`supabase/policies.sql`](../supabase/policies.sql)**（已版控）：`trips` 用 `auth.uid() = user_id`；`destinations` 用 `EXISTS` 反查母行程的擁有權 / 公開狀態。
 - **重新生成 TypeScript 型別**（每次改資料表結構後）：
   ```bash
-  npx --yes supabase gen types typescript --linked > src/types/supabase.ts
+  npx --yes supabase gen types typescript --project-id zrjghjabbyaefdnwzqqz > src/types/supabase.ts
   ```
+  - `zrjghjabbyaefdnwzqqz` 為本專案的 **Project ID（Reference ID）**。**確認方式**：Supabase Dashboard → 進入專案後看網址 `.../dashboard/project/<這段就是 ID>`，或 Settings → General → **Reference ID**。
   - **務必加 `--yes`**：否則 npx 首次會跳「Ok to proceed? (y)」安裝提問，該提問走 stdout 會被 `>` 導進型別檔、且終端機看似「當機」（其實在等你輸入）。
   - **順序**：先在後台跑 SQL 改結構 → 再重生型別（型別是資料庫現有結構的鏡像）。
   - CLI 實體在 npx 快取（`~/.npm/_npx/...`）；`package.json` 的 `@supabase/cli` 是無用空殼包，別依賴它。
+  - 備註：亦可用 `--linked`（讀 `supabase/.temp/linked-project.json` 綁定檔）取代 `--project-id`，兩者等價。
