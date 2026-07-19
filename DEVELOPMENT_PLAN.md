@@ -30,7 +30,16 @@
 - [x] 4-1. **建立專案頁面路由藍圖**：在 `src/app` 下建立核心動態路由結構（首頁 `/`、`/login`、編輯兼解鎖頁 `/trips/[id]`），採取單一網頁動態切換編輯/唯讀身分機制。
 - [x] 4-2. 編寫 `src/app/page.tsx` 使用 Server Component (SSR) 撈取並渲染公開旅遊行程（首頁形象看板）。
 - [x] 4-3a. 實作 `/trips` 個人行程總覽大廳「讀取」：Server Component 透過 `createSupabaseServerClient` 撈取當前登入者行程（RLS 生效），呈現網格卡片、撈取失敗提示、空狀態與公開/私密標籤，並於頁首右上放置登出按鈕（登出後導回首頁 `/`）。
-- [ ] 4-3b. 補完 `/trips` 的「AI 新增行程彈出視窗」與 Unsplash 封面圖寫入（需先於 `trips` 表新增 `cover_url` 欄位並重新生成型別）。
+- [ ] 4-3b. 補完 `/trips` 的「新增行程」功能：一顆「新增行程」按鈕，點擊後可選「✍️ 人工新增」或「🤖 AI 生成」，並含 Unsplash 封面寫入（詳規格見 PRODUCT_REQUIREMENTS.md 第 5 節、架構見 ADR-0007）。採「按部就班、一次到位」，每步完成才進下一步：
+    - [ ] 4-3b-1. 於 `trips` 表新增 `cover_url` 欄位（SQL），並重新生成 TypeScript 型別。
+    - [ ] 4-3b-2. 於 `/trips` 加入「新增行程」按鈕與**模式選擇 Modal**（人工新增 / AI 生成）。
+    - [ ] 4-3b-3. 實作「✍️ 人工新增」表單核心：填標題／描述／公開私密 → 寫入 `trips` → 導向 `/trips/[id]`（封面暫留空，不卡 key）。
+    - [ ] 4-3b-4. 一步步帶使用者申請 **Unsplash Access Key** 與 **Google AI Studio (Gemini) API Key**，回貼後寫入 `.env.local`（皆為伺服器端變數，不加 `NEXT_PUBLIC_`）。
+    - [ ] 4-3b-5. 安裝串接 Gemini 所需的 npm 套件。
+    - [ ] 4-3b-6. 編寫**共用封面** Route Handler（如 `src/app/api/cover/route.ts`）：關鍵字若非英文先以 Gemini 正規化為英文（羅馬拼音，可一併回傳 zh/ko/en）→ 再向 Unsplash 取圖，Key 只在後端；於人工表單加入「輸入中/韓/英關鍵字 → 生成／重新生成封面」UI，含額度防呆提示（約 50 次/小時）。
+    - [ ] 4-3b-7. 編寫後端 Route Handler `src/app/api/trips/generate/route.ts`：Gemini 結構化 JSON 生成 → 重用封面取圖邏輯 → Supabase 伺服器端寫入 `trips`(含 `cover_url`)＋`destinations` → 回傳新行程 id。
+    - [ ] 4-3b-8. 編寫前端「🤖 AI 生成」Modal `src/components/AiCreateTripModal.tsx`（自然語言輸入、Loading 防呆、PRD 視覺），成功後導向 `/trips/[id]`。
+    - [ ] 4-3b-9. （與 4-4／4-5 交界）確保無論人工或 AI 建立的景點，皆可於 `/trips/[id]` 編輯器人工新增／中間插入／修改／刪除／排序。
 - [ ] 4-4. 建立高度互動的 `/trips/[id]` 動態頁面，實作 SSR 密碼驗證頁與行程展示/編輯主體。
 - [ ] 4-5. **實作景點順序調整與時間計算**：實作景點排序（Sequence/Order）與跨國旅遊時區轉換。
 - [ ] 4-6. 實作 API 呼叫程式碼與後端爬蟲邏輯，處理 OGP 網址預覽，以及表情符號 JSONB 欄位之非同步同步。

@@ -24,6 +24,7 @@
 | [0004](#adr-0004登出後導向公開首頁-登入頁不主動出現) | 登出導向首頁、登入頁不主動出現 | 階段 4-3 | 頁面：`/trips`（登出鈕）、`/` | Accepted |
 | [0005](#adr-0005將-middleware-遷移為-proxyts) | 將 middleware 遷移為 `proxy.ts` | 階段 3-1 | `src/proxy.ts`（守 `/trips`、`/login`） | Accepted |
 | [0006](#adr-0006訪客存取-trips-導回首頁首頁登入入口依-session-變臉) | 訪客 `/trips` 導回首頁、登入入口依 session 變臉 | 階段 4 | `src/proxy.ts`、`/`、`/trips` | Accepted |
+| [0007](#adr-0007ai-行程生成採-gemini--route-handler--unsplash) | AI 行程生成採 Gemini + Route Handler + Unsplash | 階段 4-3b | `/api/trips/generate`、`AiCreateTripModal`、`trips`/`destinations` | Accepted |
 
 > 環境設定（非決策）的踩雷備忘見文末[附錄](#-附錄環境設定備忘非決策但換環境會重踩)。
 
@@ -119,6 +120,30 @@
   - ✅ 訪客不再撞登入牆，落在有內容的公開大廳。
   - ✅ 登入入口改為首頁明確按鈕，不再依賴 `/trips` 撲空，杜絕死循環。
   - ⚠️ 首頁因需讀取 session（`supabase.auth.getUser()`）而為動態渲染（原本亦是動態）。
+
+---
+
+## ADR-0007：AI 行程生成採 Gemini + Route Handler + Unsplash
+
+- **關聯階段**：階段 4-3b（AI 新增行程）
+- **影響範圍**：`src/app/api/trips/generate/route.ts`、`src/components/AiCreateTripModal.tsx`、資料表 `trips`／`destinations`
+- **狀態**：Accepted
+- **情境**：需在 `/trips` 提供「用一句自然語言生成行程初稿」的功能。此規劃源自使用者既有的 Gemini 版本設計，並以**成本**為主要考量（採 Google AI Studio 免費額度）。功能規格詳見 `PRODUCT_REQUIREMENTS.md` 第 5 節。
+- **決策**：
+  - **入口**：`/trips` 一顆「新增行程」按鈕 → 模式選擇 Modal（✍️ 人工新增 / 🤖 AI 生成）。人工路徑核心為純 CRUD；AI 路徑走以下生成流程。兩者建立後共用同一套 `/trips/[id]` 編輯器。
+  - **封面圖統一走後端**：人工與 AI 兩路徑取 Unsplash 圖片皆透過**共用的伺服器端 Route Handler**（如 `/api/cover`），Unsplash Key 只在後端。人工路徑額外提供「輸入關鍵字 → 生成／重新生成」互動；AI 路徑則以生成的英文關鍵字自動取圖。
+  - **跨語言關鍵字（翻譯層重用 Gemini）**：Unsplash 搜尋以英文 metadata 為主，中/韓文查詢效果差。故人工封面關鍵字若非英文，後端**重用 Gemini** 正規化為英文羅馬拼音（可一併回傳 zh/ko/en），再查 Unsplash——**不額外申請翻譯 API**（避開 Google Cloud Translation 需計費的負擔）。因此 Gemini key 申請順序**提前**至封面功能之前（採方案 B）。
+  - **額度**：Unsplash 免費 Demo 約 50 次/小時（以官方後台為準），每次生成/重生成算一次；若觸發翻譯亦各算一次 Gemini 呼叫。UI 須防呆並在達限時提示。
+  - **AI 模型**：使用 **Google Gemini API**（免費額度），要求以結構化 JSON 回傳（標題、天數、每日景點、代表英文關鍵字）。
+  - **架構**：前端 Modal → 後端 **Route Handler `POST /api/trips/generate`** 統一處理生成、取圖、寫入；**API 金鑰只在伺服器端**（環境變數不加 `NEXT_PUBLIC_`），杜絕外洩。
+  - **封面圖**：以 AI 回傳的英文關鍵字呼叫 **Unsplash API**，將圖片 URL 定值存入 `trips.cover_url`。
+  - **寫入**：以 Supabase 伺服器端實例寫入 `trips` + `destinations`，`user_id` 綁當前登入者、受 RLS 保護；完成後導向 `/trips/[id]`。
+  - **可覆寫原則**：AI 生成的景點僅為初稿，使用者於 `/trips/[id]` 編輯器可人工新增／中間插入／修改／刪除／排序（實作歸屬 4-4／4-5）。
+- **影響**：
+  - ✅ 金鑰不落前端；生成、取圖、寫入集中於單一後端端點，易於維護與防呆。
+  - ✅ 免費額度，個人專案成本為零。
+  - ⚠️ 引入本專案**首個外部 AI 依賴（Gemini）**；未來若要改用其他模型（如 Claude），只需替換 Route Handler 內的生成段落，前端與資料流不受影響。
+  - ⚠️ 需申請並保管兩把外部 API Key（Gemini、Unsplash），屬換環境要重做的設定。
 
 ---
 
