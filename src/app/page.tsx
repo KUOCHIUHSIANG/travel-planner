@@ -71,7 +71,7 @@ export default async function HomePage() {
                 href={`/trips/${trip.id}?mode=public`}
                 className="group flex flex-col overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm transition hover:border-[#FF8C42]/40 hover:shadow-md"
               >
-                {/* Unsplash 封面圖區塊（cover_url 欄位尚未加入，先以佔位漸層呈現） */}
+                {/* Unsplash 封面圖區塊（cover_url 欄位已建立；封面寫入功能 4-3b-7 完成前，先以佔位漸層呈現） */}
                 <div className="relative flex aspect-[4/3] w-full items-center justify-center bg-gradient-to-br from-sky-100 to-slate-100 text-sm text-slate-400">
                   Unsplash 封面圖預留區
                   <span className="absolute right-3 top-3 rounded-full bg-sky-600 px-3 py-1 text-xs font-medium text-white shadow-sm">
