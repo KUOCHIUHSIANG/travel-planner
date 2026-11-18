@@ -27,6 +27,7 @@
 | [0007](#adr-0007ai-行程生成採-gemini--route-handler--unsplash) | AI 行程生成採 Gemini + Route Handler + Unsplash | 階段 4-3b | `/api/trips/generate`、`AiCreateTripModal`、`trips`/`destinations` | Accepted |
 | [0008](#adr-0008行程詳細頁地圖與距離採-google-maps-platform) | 行程詳細頁地圖與距離採 Google Maps Platform | 階段 4-8 | `/trips/[id]`、`destinations`(lat/lng) | Accepted |
 | [0009](#adr-0009景點層級私密驚喜旗標-is_secret-以-rls-強制) | 景點層級私密/驚喜旗標 `is_secret`（以 RLS 強制） | 階段 4-9 | `destinations`(is_secret)、RLS | Accepted |
+| [0010](#adr-0010專案通用化支援多地區台灣香港韓國) | 專案通用化，支援多地區（台灣／香港／韓國） | 階段 4-3b / 4-4 / 4-8 | `trips`(region)、`destinations`(address)、全站文案 | Accepted |
 
 > 環境設定（非決策）的踩雷備忘見文末[附錄](#-附錄環境設定備忘非決策但換環境會重踩)。
 
@@ -134,7 +135,7 @@
 - **決策**：
   - **入口**：`/trips` 一顆「新增行程」按鈕 → 模式選擇 Modal（✍️ 人工新增 / 🤖 AI 生成）。人工路徑核心為純 CRUD；AI 路徑走以下生成流程。兩者建立後共用同一套 `/trips/[id]` 編輯器。
   - **封面圖統一走後端**：人工與 AI 兩路徑取 Unsplash 圖片皆透過**共用的伺服器端 Route Handler**（如 `/api/cover`），Unsplash Key 只在後端。人工路徑額外提供「輸入關鍵字 → 生成／重新生成」互動；AI 路徑則以生成的英文關鍵字自動取圖。
-  - **跨語言關鍵字（翻譯層重用 Gemini）**：Unsplash 搜尋以英文 metadata 為主，中/韓文查詢效果差。故人工封面關鍵字若非英文，後端**重用 Gemini** 正規化為英文羅馬拼音（可一併回傳 zh/ko/en），再查 Unsplash——**不額外申請翻譯 API**（避開 Google Cloud Translation 需計費的負擔）。因此 Gemini key 申請順序**提前**至封面功能之前（採方案 B）。
+  - **跨語言關鍵字（翻譯層重用 Gemini）**：Unsplash 搜尋以英文 metadata 為主，中/韓文查詢效果差。故人工封面關鍵字若非英文，後端**重用 Gemini** 正規化為英文羅馬拼音（可一併回傳 zh/ko/en），再查 Unsplash——**不額外申請翻譯 API**（避開 Google Cloud Translation 需計費的負擔）。因此 Gemini key 申請順序**提前**至封面功能之前（採方案 B）。（地區通用化後改為回傳 zh/en，韓國地區才另外回傳 ko，見 ADR-0010。）
   - **額度**：Unsplash 免費 Demo 約 50 次/小時（以官方後台為準），每次生成/重生成算一次；若觸發翻譯亦各算一次 Gemini 呼叫。UI 須防呆並在達限時提示。
   - **AI 模型**：使用 **Google Gemini API**（免費額度），要求以結構化 JSON 回傳（標題、天數、每日景點、代表英文關鍵字）。
   - **架構**：前端 Modal → 後端 **Route Handler `POST /api/trips/generate`** 統一處理生成、取圖、寫入；**API 金鑰只在伺服器端**（環境變數不加 `NEXT_PUBLIC_`），杜絕外洩。
@@ -165,6 +166,7 @@
   - ⚠️ **本專案首個需綁定信用卡、開啟計費的服務**（Google Cloud）；雖有每月免費額度，仍須留意超額計費與用量監控。
   - ⚠️ 需管理景點座標來源；前端金鑰僅能靠 referrer／白名單防濫用，無法完全隱藏。
   - 💡 若日後想避免綁卡，替代方案為 OpenStreetMap + Leaflet + Haversine 直線距離（另開 ADR 評估）。
+  - ⚠️ 地區通用化後（ADR-0010），Google 在韓國的路線／距離功能可能受限，4-8 實作前要先驗證。
 
 ---
 
@@ -183,6 +185,29 @@
   - ✅ 多使用者情境下亦正確：他人登入看你的公開行程，仍看不到私密景點。
   - ⚠️ 前提是別把帳號擁有權交給他人（屬帳號安全，非 RLS 範疇）。
   - 📌 RLS 政策原始碼同步更新於 `supabase/policies.sql`。
+
+---
+
+## ADR-0010：專案通用化，支援多地區（台灣／香港／韓國）
+
+- **關聯階段**：階段 4-3b（新增行程）、4-4（景點編輯器）、4-8（地圖）
+- **影響範圍**：`PRODUCT_REQUIREMENTS.md` 第 2、5、6 節；資料表 `trips`（新增 `region`）、`destinations`（新增 `address`）；網站名稱與首頁、`/trips` 文案
+- **狀態**：Accepted
+- **情境**：專案原本只為濟州島設計（中韓雙語、Naver Map）。2026-11-16 負責人表示濟州島行程延期、時間未定，短期內可能先去香港，因此希望文案與元件可以通用，不綁定單一目的地。配色維持不變。
+- **決策**：
+  - 網站名稱改為 **Trip Planner**。
+  - `trips` 新增 **`region`**（`TW`／`HK`／`KR`），建立行程時必選、之後可修改；既有行程預設補為 `KR`（原本都是以濟州島規劃）。採 `text` + `CHECK` 限制，而非 Postgres `enum`：之後加地區只要改 CHECK，不用處理 enum 型別的遷移。
+  - `destinations` 新增 **`address`**（原本資料表沒有地址欄位）。韓國地區以韓文填寫。
+  - 保留既有的 **`name_ko`**，但只在韓國地區顯示；不改名，省掉一次欄位遷移。
+  - 一鍵複製後的 Toast 依地區推薦地圖 App：韓國 → Naver Map，台灣／香港 → Google Maps。
+  - Gemini 關鍵字正規化改為回傳 `zh／en`，韓國地區才另外回傳 `ko`（調整 ADR-0007）。
+  - 🙅‍♂️「小傑覺得先不要」文案**保留**（負責人決定）。
+- **影響**：
+  - ✅ 同一套元件可以用在不同目的地；加新地區只要加選項與對照表。
+  - ✅ 短期內的香港行程可以直接使用。
+  - ⚠️ 景點欄位顯示要依 `region` 判斷，元件多一層條件。
+  - ⚠️ Google 在韓國的路線／距離功能可能受限，4-8 實作前要先驗證（見 ADR-0008）。
+  - 📌 加欄位的 SQL 與重生型別排在 `DEVELOPMENT_PLAN.md` 的 4-3b-2。
 
 ---
 

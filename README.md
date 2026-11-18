@@ -1,6 +1,6 @@
-# 🍊 濟州島旅遊行程規劃器（travel-planner）
+# 🍊 Trip Planner（travel-planner）
 
-一起出遊用的濟州島行程規劃網站，同時也是負責人從 Vue 2 轉 React／Next.js 的練功專案。
+跟朋友出遊用的旅遊行程規劃網站，目前支援台灣、香港、韓國三個地區（見 [ADR-0010](./docs/DECISIONS.md)），同時也是負責人從 Vue 2 轉 React／Next.js 的練功專案。
 
 - **技術**：Next.js 16（App Router）、TypeScript、Tailwind CSS、Supabase（`@supabase/ssr`）
 - **GitHub**：`KUOCHIUHSIANG/travel-planner`
