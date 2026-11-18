@@ -33,7 +33,7 @@ export default async function HomePage() {
           <div className="space-y-2">
             <h1 className="text-3xl font-bold text-slate-900">公開行程大廳</h1>
             <p className="text-slate-500">
-              探索大家分享的濟州島與韓國旅遊路線，找靈感、抄作業。
+              探索大家分享的旅遊路線，找靈感、抄作業。
             </p>
           </div>
           {/* 依登入狀態變臉：未登入顯示「登入」，已登入顯示「我的行程」 */}

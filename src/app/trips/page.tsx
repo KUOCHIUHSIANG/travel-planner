@@ -36,7 +36,7 @@ export default async function TripsPage() {
                 <header className="mb-10 flex items-center justify-between gap-4">
                     <div className="space-y-2">
                         <h1 className="text-3xl font-bold text-slate-900">我的行程</h1>
-                        <p className="text-slate-500">規劃、收藏並管理屬於你們的濟州島旅程。</p>
+                        <p className="text-slate-500">規劃、收藏並管理屬於你們的旅程。</p>
                     </div>
                     <div className="flex shrink-0 items-center gap-3">
                         {/* 前往公開行程大廳首頁，置於登出按鈕左側 */}
