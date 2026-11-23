@@ -30,7 +30,7 @@ export default async function TripsPage() {
         .order('created_at', { ascending: false });
 
     return (
-        <main className="min-h-screen bg-[#FDFBF7]">
+        <main className="min-h-screen bg-background">
             <div className="mx-auto max-w-6xl px-6 py-12">
                 {/* 頁首 */}
                 <header className="mb-10 flex items-center justify-between gap-4">
@@ -42,7 +42,7 @@ export default async function TripsPage() {
                         {/* 前往公開行程大廳首頁，置於登出按鈕左側 */}
                         <Link
                             href="/"
-                            className="rounded-lg border border-sky-600 px-4 py-2 text-sm font-medium text-sky-600 transition hover:border-[#FF8C42] hover:text-[#FF8C42]"
+                            className="rounded-lg border border-sky-600 px-4 py-2 text-sm font-medium text-sky-600 transition hover:border-sunset hover:text-sunset"
                         >
                             公開大廳
                         </Link>
@@ -74,7 +74,7 @@ export default async function TripsPage() {
                             <Link
                                 key={trip.id}
                                 href={`/trips/${trip.id}`}
-                                className="group flex flex-col overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm transition hover:border-[#FF8C42]/40 hover:shadow-md"
+                                className="group flex flex-col overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm transition hover:border-sunset/40 hover:shadow-md"
                             >
                                 {/* Unsplash 封面圖預留區（cover_url 欄位已建立；封面寫入功能 4-3b-7 完成前，先以佔位漸層呈現） */}
                                 <div className="relative flex aspect-[4/3] w-full items-center justify-center bg-gradient-to-br from-sky-100 to-slate-100 text-sm text-slate-400">
@@ -92,7 +92,7 @@ export default async function TripsPage() {
 
                                 {/* 卡片內容 */}
                                 <div className="flex flex-1 flex-col gap-1 p-5">
-                                    <h2 className="text-lg font-semibold text-slate-900 transition group-hover:text-[#FF8C42]">
+                                    <h2 className="text-lg font-semibold text-slate-900 transition group-hover:text-sunset">
                                         {trip.title}
                                     </h2>
                                     {trip.description && (

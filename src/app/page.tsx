@@ -26,7 +26,7 @@ export default async function HomePage() {
     .order('created_at', { ascending: false });
 
   return (
-    <main className="min-h-screen bg-[#FDFBF7]">
+    <main className="min-h-screen bg-background">
       <div className="mx-auto max-w-6xl px-6 py-12">
         {/* 頁首：公開行程大廳標題 + 登入入口 */}
         <header className="mb-10 flex items-center justify-between gap-4">
@@ -39,7 +39,7 @@ export default async function HomePage() {
           {/* 依登入狀態變臉：未登入顯示「登入」，已登入顯示「我的行程」 */}
           <Link
             href={user ? '/trips' : '/login'}
-            className="shrink-0 rounded-lg border border-sky-600 px-4 py-2 text-sm font-medium text-sky-600 transition hover:border-[#FF8C42] hover:text-[#FF8C42]"
+            className="shrink-0 rounded-lg border border-sky-600 px-4 py-2 text-sm font-medium text-sky-600 transition hover:border-sunset hover:text-sunset"
           >
             {user ? '我的行程' : '登入'}
           </Link>
@@ -69,7 +69,7 @@ export default async function HomePage() {
               <Link
                 key={trip.id}
                 href={`/trips/${trip.id}?mode=public`}
-                className="group flex flex-col overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm transition hover:border-[#FF8C42]/40 hover:shadow-md"
+                className="group flex flex-col overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm transition hover:border-sunset/40 hover:shadow-md"
               >
                 {/* Unsplash 封面圖區塊（cover_url 欄位已建立；封面寫入功能 4-3b-7 完成前，先以佔位漸層呈現） */}
                 <div className="relative flex aspect-[4/3] w-full items-center justify-center bg-gradient-to-br from-sky-100 to-slate-100 text-sm text-slate-400">
@@ -81,7 +81,7 @@ export default async function HomePage() {
 
                 {/* 卡片內容 */}
                 <div className="flex flex-1 flex-col gap-1 p-5">
-                  <h2 className="text-lg font-semibold text-slate-900 transition group-hover:text-[#FF8C42]">
+                  <h2 className="text-lg font-semibold text-slate-900 transition group-hover:text-sunset">
                     {trip.title}
                   </h2>
                   {trip.description && (

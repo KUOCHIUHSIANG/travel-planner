@@ -12,7 +12,7 @@ export default async function TripDetailPage({ params }: TripDetailPageProps) {
   const { id } = await params;
 
   return (
-    <main className="min-h-screen bg-[#FDFBF7]">
+    <main className="min-h-screen bg-background">
       <div className="mx-auto max-w-4xl px-6 py-12">
         <header className="space-y-2">
           <p className="text-sm font-medium text-slate-400">行程 ID</p>

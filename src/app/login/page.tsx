@@ -47,7 +47,7 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-[#FDFBF7] px-4">
+        <div className="flex min-h-screen items-center justify-center bg-background px-4">
             <div className="w-full max-w-md rounded-2xl border border-slate-100 bg-white p-8 shadow-sm">
                 <h1 className="mb-6 text-center text-2xl font-bold text-slate-900">
                     🌍 智旅規劃幫
@@ -63,7 +63,7 @@ export default function LoginPage() {
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             required
-                            className="w-full rounded-lg border border-slate-200 px-3 py-2 text-slate-900 outline-none transition focus:border-[#FF8C42] focus:ring-2 focus:ring-[#FF8C42]/30"
+                            className="w-full rounded-lg border border-slate-200 px-3 py-2 text-slate-900 outline-none transition focus:border-sunset focus:ring-2 focus:ring-sunset/30"
                         />
                     </div>
 
@@ -76,7 +76,7 @@ export default function LoginPage() {
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             required
-                            className="w-full rounded-lg border border-slate-200 px-3 py-2 text-slate-900 outline-none transition focus:border-[#FF8C42] focus:ring-2 focus:ring-[#FF8C42]/30"
+                            className="w-full rounded-lg border border-slate-200 px-3 py-2 text-slate-900 outline-none transition focus:border-sunset focus:ring-2 focus:ring-sunset/30"
                         />
                     </div>
 
@@ -95,7 +95,7 @@ export default function LoginPage() {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="flex-1 rounded-lg bg-sky-600 px-4 py-3 font-bold text-white transition hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-[#FF8C42]/50 disabled:cursor-not-allowed disabled:opacity-60"
+                            className="flex-1 rounded-lg bg-sky-600 px-4 py-3 font-bold text-white transition hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-sunset/50 disabled:cursor-not-allowed disabled:opacity-60"
                         >
                             {loading ? '處理中...' : '登入'}
                         </button>
@@ -103,7 +103,7 @@ export default function LoginPage() {
                             type="button"
                             onClick={handleSignUp}
                             disabled={loading}
-                            className="flex-1 rounded-lg border border-sky-600 px-4 py-3 font-bold text-sky-600 transition hover:border-[#FF8C42] hover:text-[#FF8C42] focus:outline-none focus:ring-2 focus:ring-[#FF8C42]/50 disabled:cursor-not-allowed disabled:opacity-60"
+                            className="flex-1 rounded-lg border border-sky-600 px-4 py-3 font-bold text-sky-600 transition hover:border-sunset hover:text-sunset focus:outline-none focus:ring-2 focus:ring-sunset/50 disabled:cursor-not-allowed disabled:opacity-60"
                         >
                             註冊
                         </button>

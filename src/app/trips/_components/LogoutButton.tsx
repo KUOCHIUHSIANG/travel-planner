@@ -22,7 +22,7 @@ export default function LogoutButton() {
             type="button"
             onClick={handleSignOut}
             disabled={loading}
-            className="shrink-0 rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-600 transition hover:border-[#FF8C42] hover:text-[#FF8C42] disabled:cursor-not-allowed disabled:opacity-60"
+            className="shrink-0 rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-600 transition hover:border-sunset hover:text-sunset disabled:cursor-not-allowed disabled:opacity-60"
         >
             {loading ? '登出中...' : '登出'}
         </button>
