@@ -25,11 +25,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
+    // suppressHydrationWarning：Chrome 外掛（如 GrabIt）會在 React 接手前，往 <html>／<body> 塞自己的屬性，
+    // 造成 hydration 警告。這個設定只忽略「這兩個標籤自己」的屬性差異，不影響裡面頁面內容的檢查。
     <html
       lang="zh-Hant"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col">
+      <body className="min-h-full flex flex-col" suppressHydrationWarning>
         {children}
         {/* 全站共用的 Toast 容器：任何頁面呼叫 toast.add() 都會顯示在這裡 */}
         <Toaster />
