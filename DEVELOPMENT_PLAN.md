@@ -32,7 +32,7 @@
 - [x] 4-3a. 實作 `/trips` 個人行程總覽大廳「讀取」：Server Component 透過 `createSupabaseServerClient` 撈取當前登入者行程（RLS 生效），呈現網格卡片、撈取失敗提示、空狀態與公開/私密標籤，並於頁首右上放置登出按鈕（登出後導回首頁 `/`）。
 - [ ] 4-3b. 補完 `/trips` 的「新增行程」功能：一顆「新增行程」按鈕，點擊後可選「✍️ 人工新增」或「🤖 AI 生成」，並含 Unsplash 封面寫入（詳規格見 PRODUCT_REQUIREMENTS.md 第 5 節、架構見 ADR-0007）。採「按部就班、一次到位」，每步完成才進下一步：
     - [x] 4-3b-1. 於 `trips` 表新增 `cover_url` 欄位（SQL），並重新生成 TypeScript 型別。
-    - [ ] 4-3b-2. **多地區欄位**（見 ADR-0010）：`trips` 新增 `region`（`TW`／`HK`／`KR`，既有行程補為 `KR`）、`destinations` 新增 `address`（SQL），並重新生成 TypeScript 型別。
+    - [x] 4-3b-2. **多地區欄位**（見 ADR-0010）：`trips` 新增 `region`（`TW`／`HK`／`KR`，既有行程補為 `KR`）、`destinations` 新增 `address`（SQL），並重新生成 TypeScript 型別。
     - [ ] 4-3b-3. 安裝並初始化 `shadcn/ui`（PRD 第 1 節指定之組件庫），套用沙灘微米白／湛藍海洋色／夕陽橘點綴的主題色，並加入後續所需的 Dialog（Modal）與 Toast 組件。
     - [ ] 4-3b-4. 於 `/trips` 加入「新增行程」按鈕與**模式選擇 Modal**（人工新增 / AI 生成）。
     - [ ] 4-3b-5. 實作「✍️ 人工新增」表單核心：填標題／描述／**地區**／公開私密 → 寫入 `trips` → 導向 `/trips/[id]`（封面暫留空，不卡 key）。
