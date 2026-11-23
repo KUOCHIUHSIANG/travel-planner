@@ -43,3 +43,8 @@ supabase/.branches
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# 個人 AI 工具設定（Claude Code／Codex 的技能與 MCP 設定），不進版控
+.agents/
+.claude/
+.codex/
