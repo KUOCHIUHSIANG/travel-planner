@@ -10,6 +10,7 @@ import {
     DialogTitle,
     DialogTrigger,
 } from '@/components/ui/dialog';
+import CreateTripForm from './CreateTripForm';
 
 // 新增行程的兩種模式（PRD 第 5 節）；null 代表還停在「選擇模式」畫面
 type CreateMode = 'manual' | 'ai' | null;
@@ -20,7 +21,6 @@ const MODE_OPTIONS = [
         emoji: '✍️',
         title: '人工新增',
         description: '自己填標題、地區與描述，之後再慢慢加景點。',
-        comingSoon: '人工新增表單會在下一步（4-3b-5）完成。',
     },
     {
         mode: 'ai',
@@ -47,7 +47,7 @@ export default function CreateTripButton() {
 
             <DialogContent className="sm:max-w-md">
                 {selected ? (
-                    // 已選模式：之後在這裡放對應的表單（目前先顯示施工中提示）
+                    // 已選模式：人工新增顯示表單（4-3b-5）；AI 生成還在施工中（4-3b-10）
                     <>
                         <DialogHeader>
                             <DialogTitle>
@@ -55,12 +55,18 @@ export default function CreateTripButton() {
                             </DialogTitle>
                             <DialogDescription>{selected.description}</DialogDescription>
                         </DialogHeader>
-                        <p className="rounded-lg border border-dashed bg-muted/50 px-4 py-6 text-center text-sm text-muted-foreground">
-                            🚧 {selected.comingSoon}
-                        </p>
-                        <Button variant="outline" onClick={() => setMode(null)}>
-                            ← 換一種方式
-                        </Button>
+                        {selected.mode === 'manual' ? (
+                            <CreateTripForm onBack={() => setMode(null)} />
+                        ) : (
+                            <>
+                                <p className="rounded-lg border border-dashed bg-muted/50 px-4 py-6 text-center text-sm text-muted-foreground">
+                                    🚧 {selected.comingSoon}
+                                </p>
+                                <Button variant="outline" onClick={() => setMode(null)}>
+                                    ← 換一種方式
+                                </Button>
+                            </>
+                        )}
                     </>
                 ) : (
                     // 選擇模式畫面
