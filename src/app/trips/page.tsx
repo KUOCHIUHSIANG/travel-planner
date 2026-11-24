@@ -1,11 +1,12 @@
 // 個人行程總覽大廳（Server Component / SSR 預設）— 對應路由藍圖 4-3
 // 透過 Server 端 Supabase Client 撈取「當前登入者」的行程，RLS 確保只回傳自己的資料。
-// 本版先聚焦「讀取 + 網格呈現 + 空狀態」；AI 新增行程彈窗與 Unsplash 封面圖寫入留待下一步。
+// 頁首的「新增行程」按鈕與模式選擇 Modal 拆在 Client Component（CreateTripButton），本頁維持 Server Component。
 
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { createSupabaseServerClient } from '@/lib/supabaseServer';
 import type { Tables } from '@/types/supabase';
+import CreateTripButton from './_components/CreateTripButton';
 import LogoutButton from './_components/LogoutButton';
 
 // 對應資料庫 trips 資料表的一列
@@ -39,6 +40,8 @@ export default async function TripsPage() {
                         <p className="text-slate-500">規劃、收藏並管理屬於你們的旅程。</p>
                     </div>
                     <div className="flex shrink-0 items-center gap-3">
+                        {/* 新增行程（人工／AI 兩種模式），最主要的動作放最左邊 */}
+                        <CreateTripButton />
                         {/* 前往公開行程大廳首頁，置於登出按鈕左側 */}
                         <Link
                             href="/"
@@ -62,7 +65,7 @@ export default async function TripsPage() {
                     <div className="rounded-2xl border border-dashed border-slate-200 bg-white p-12 text-center">
                         <p className="text-lg text-slate-500">還沒有任何行程</p>
                         <p className="mt-1 text-sm text-slate-400">
-                            之後可以在這裡用 AI 一鍵生成你的第一趟旅程 ✈️
+                            按右上角「新增行程」建立你的第一趟旅程 ✈️
                         </p>
                     </div>
                 )}

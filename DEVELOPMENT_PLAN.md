@@ -34,7 +34,7 @@
     - [x] 4-3b-1. 於 `trips` 表新增 `cover_url` 欄位（SQL），並重新生成 TypeScript 型別。
     - [x] 4-3b-2. **多地區欄位**（見 ADR-0010）：`trips` 新增 `region`（`TW`／`HK`／`KR`，既有行程補為 `KR`）、`destinations` 新增 `address`（SQL），並重新生成 TypeScript 型別。
     - [x] 4-3b-3. 安裝並初始化 `shadcn/ui`（PRD 第 1 節指定之組件庫），套用沙灘微米白／湛藍海洋色／夕陽橘點綴的主題色，並加入後續所需的 Dialog（Modal）與 Toast 組件。
-    - [ ] 4-3b-4. 於 `/trips` 加入「新增行程」按鈕與**模式選擇 Modal**（人工新增 / AI 生成）。
+    - [x] 4-3b-4. 於 `/trips` 加入「新增行程」按鈕與**模式選擇 Modal**（人工新增 / AI 生成）。
     - [ ] 4-3b-5. 實作「✍️ 人工新增」表單核心：填標題／描述／**地區**／公開私密 → 寫入 `trips` → 導向 `/trips/[id]`（封面暫留空，不卡 key）。
     - [ ] 4-3b-6. 一步步帶使用者申請 **Unsplash Access Key** 與 **Google AI Studio (Gemini) API Key**，回貼後寫入 `.env.local`（皆為伺服器端變數，不加 `NEXT_PUBLIC_`）。
     - [ ] 4-3b-7. 安裝串接 Gemini 所需的 npm 套件。
